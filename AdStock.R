@@ -21,32 +21,35 @@ AdStock <- function(df,field,rate = 0.9) { #Ejemplo: AdStock(Base_OMO,35,0.7)
 
 #AdStock(Base_OMO,35,0.7)
 
-media <- c(5:38)
-v <- Base_OMO$VENTA
+media <- c(5:34) #Columnas con inversión en medios
+v <- Base_OMO$VENTA #Se guarda en v, la columna venta
 
 
-rates <- seq(0.1,0.9,0.001)
+rates <- seq(0.001,0.999,0.001) #Creamos un vector con una secuencia de ratios, de 0.1 a 0.9 avanzando de 0.001 Para los ratios
 
 
 f <- NULL #Se crea una variable nula, si no se agrega genera error
-for(j in media) {
-c <- NULL #Se crea una variable nula, si no se agrega genera error
-for(i in rates) {
-    x <- AdStock(Base_OMO,j,i)
-    c1 <- cbind(cor(x,v),i)
-    c <- rbind(c,c1)
-    c <- as.data.frame(c)
-    cmax <- c[c[,1] == max(c[,1]),]
-    cmin <- c[c[,1] == min(c[,1]),]
-    c <- rbind(cmax,cmin)
-    c <- c[c[,1] == max(c[,1]),]
-    }
+for(j in media) { #For para avanzar en las columnas de medios
+  c <- NULL #Se crea una variable nula, si no se agrega genera error
+  for(i in rates) { #Ciclo para probar con todos los ratios
+      x <- AdStock(Base_OMO,j,i) #Se ocupa la función Adstock para el rato y medio elegido
+      c1 <- cbind(cor(x,v),i) #Se saca la correlación entre x y v, y se ocupa cbind (column bind) para hacer un vector 1x2 con la correlación y el ratio 
+      c <- rbind(c,c1)#Agrega filas hacia abajo con la correlación y cada ratio
+      c <- as.data.frame(c) #guarda todo esto en un dataframe llamad c
+      #cmax <- c[c[,1] == max(c[,1]),] 
+      #cmin <- c[c[,1] == min(c[,1]),]
+      #c <- rbind(cmax,cmin) 
+      #c <- c[c[,1] == max(c[,1]),]
+  }
 colnames(c) <- c('corr','dacay')
-c$field <- j
-f1 <- c
+c$sign <- sign(c$corr)
+c$corr <- abs(c$corr)
+cmax <- c[c[,1] == max(c[,1]),]
+cmax$field <- j
+f1 <- cmax
 f <- rbind(f,f1)
+
 print(j)
 }
-f <- unique(f)
 
 
