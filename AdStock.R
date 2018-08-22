@@ -41,15 +41,15 @@ for(j in media) { #For para avanzar en las columnas de medios
       #c <- rbind(cmax,cmin) 
       #c <- c[c[,1] == max(c[,1]),]
   }
-colnames(c) <- c('corr','dacay')
-c$sign <- sign(c$corr)
-c$corr <- abs(c$corr)
-cmax <- c[c[,1] == max(c[,1]),]
-cmax$field <- j
-f1 <- cmax
-f <- rbind(f,f1)
+colnames(c) <- c('corr','dacay') #Agregamos nombres a las columnas de df
+c$sign <- sign(c$corr) #Agregamos una nueva columna con el "signo" de la correlación + o -
+c$corr <- abs(c$corr) #Sacamos el valor absoluto de la correlación
+cmax <- c[c[,1] == max(c[,1]),] #Se filtra c por el máximo
+cmax$field <- j #Se agrega la columna con el número del campo
+f1 <- cmax #Se renombra cmax en f1
+f <- rbind(f,f1) #Los f1 se van acumulando hacia abajo en un dataframe
 
-print(j)
+print(j) 
 }
 
 
