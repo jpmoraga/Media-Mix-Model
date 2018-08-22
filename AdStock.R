@@ -21,7 +21,7 @@ AdStock <- function(df,field,rate = 0.9) { #Ejemplo: AdStock(Base_OMO,35,0.7)
 
 #AdStock(Base_OMO,35,0.7)
 
-media <- c(5:34) #Columnas con inversión en medios
+media <- c(5:6) #Columnas con inversión en medios
 v <- Base_OMO$VENTA #Se guarda en v, la columna venta
 
 
@@ -48,8 +48,7 @@ cmax <- c[c[,1] == max(c[,1]),] #Se filtra c por el máximo
 cmax$field <- j #Se agrega la columna con el número del campo
 f1 <- cmax #Se renombra cmax en f1
 f <- rbind(f,f1) #Los f1 se van acumulando hacia abajo en un dataframe
-
-print(j) 
+print(paste((j-min(media)+1)/length(media)*100,'%',sep = ' ')) #Se agrega porcentaje de avance
 }
 
 
