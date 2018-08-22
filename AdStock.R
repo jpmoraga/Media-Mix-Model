@@ -1,4 +1,11 @@
 
+# El df (la base inicial) debe venir en el siguiente formato:
+# El primer campo es la variable Fecha
+# Los siguientes son las variables que no tienen relación con inversión en medios
+# Luego las variables de inverción en medios (O cualquier otra que requiera un proceso de AdStock como TRP)
+# Al final va la variable objetivo o predictiva (generalmente VENTA)
+# Los nombres de los cambpos son irrelevantes
+
 AdStock <- function(df,field,rate = 0.9) { #Ejemplo: AdStock(Base_OMO,35,0.7)
 ## Effect = Spend + last_week_effect * decay
 
@@ -21,8 +28,8 @@ AdStock <- function(df,field,rate = 0.9) { #Ejemplo: AdStock(Base_OMO,35,0.7)
 
 #AdStock(Base_OMO,35,0.7)
 
-media <- c(5:6) #Columnas con inversión en medios
-v <- Base_OMO$VENTA #Se guarda en v, la columna venta
+#media <- c(5:6) #Columnas con inversión en medios
+#v <- Base_OMO$VENTA #Se guarda en v, la columna venta
 
 Opt_Adstock <- function(df,spend_field,media) { #Ejemplo Opt_Adstock(Base_OMO,39,c(5:8))
   #df, es el data frame inicial
@@ -54,3 +61,24 @@ Opt_Adstock <- function(df,spend_field,media) { #Ejemplo Opt_Adstock(Base_OMO,39
   return(fin)
 }
 
+#Opt_cor <- Opt_Adstock(Base_OMO,39,c(5:38))
+
+db_AdStock <- function(df,Opt_Ad) { #Ejemplo db_AdStock(Base_OMO,Opt_cor), donde Opt_cor <- Opt_Adstock(Base_OMO,39,c(5:38))
+
+  fields <- Opt_Ad$field #Se dejan los numeros de los campos en un vector
+  
+  Ini <- df[,1:4] #Se toman las primeras variables del df. Las que no tienen relación con medios
+  for(i in fields) { #Se recorre el vector de los campos de medios
+    
+    as1 <- AdStock(df,i,Opt_Ad[Opt_Ad$field == i, 2]) #Se calcula el vector de AdStock 
+    as1 <- as.data.frame(as1) #Se cambia el tipo de dato a dataframe
+    colnames(as1) <- paste(colnames(df)[i],'AS',sep = '_') #Se le agrega _AS al nombre de cada variable de medios
+    Ini <- cbind(Ini,as1) #Se anexa a los campos iniciales
+  }
+  db_Modeling <- cbind(Ini,df[,length(colnames(df))]) #Se agrega la columna con la variable objetivo o predictiva (Por ejemplo VENTAS)
+  colnames(db_Modeling)[length(colnames(db_Modeling))] <- 'Y' #Se renombra la variable objetivo como 'Y'
+  
+  return(db_Modeling) #Se retorna la base original con los campos actualizados por efecto publicitario
+  }
+
+#db_AdStock(Base_OMO,Opt_cor)
